@@ -25,17 +25,18 @@ pipeline {
             }
         }
 
-        stage('Build Artifacts') {
+        stage("Build Artifacts") {
             steps {
                 script {
                     if (params.mode == "Deploy") {
                         currentBuild.displayName = "${params.host}_${params.mode}_${BUILD_NUMBER}"
+
                         def environment = "${params.host}"
                         def giturl = 'https://github.com/shinrah/JenkinsPipelineDemoProject.git'
                         def gitBranch = "${params.GIT_Branch_Tag}"
 
-                        echo "Building artifacts for ${environment} from ${giturl}, branch ${gitBranch}"
-                        // Add your actual build steps here
+                        echo "Ready to build for ${environment} from branch ${gitBranch}"
+                        // Add actual build commands here if needed
                     }
                 }
             }
@@ -47,7 +48,26 @@ pipeline {
                     cleanWs()
                     def gitBranch = "${params.GIT_Branch_Tag}"
                     if (gitBranch != "") {
-                        echo "Formatted GIT branch tag is ${gitBranch}" // Placeholder; replace if needed
+                        def formattedGitBranch = gitBranch // placeholder if you want to format it
+                        echo "Formatted GIT branch tag is ${formattedGitBranch}"
+                    }
+                }
+            }
+        }
+
+        stage('Preparation') {
+            steps {
+                script {
+                    echo 'Checkout code from source code repository'
+                    if ("${gitBranch}" != "") {
+                        checkout([
+                            $class: 'GitSCM',
+                            branches: [[name: "${formattedGitBrach}"]],
+                            doGenerateSubmoduleConfigurations: false,
+                            extensions: [],
+                            submoduleCfg: [],
+                            userRemoteConfigs: [[url: giurl]]
+                        ])
                     }
                 }
             }
