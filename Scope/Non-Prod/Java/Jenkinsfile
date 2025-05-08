@@ -5,8 +5,11 @@ pipeline {
         giurl = 'https://github.com/shinrah/JenkinsPipelineDemoProject.git'
         gitBranch = "${params.GIT_Branch_Tag}"
         formattedGitBranch = "${params.GIT_Branch_Tag}" // Adjust if formatting is needed
-        JAVA_HOME = "/usr/lib/jvm/java-17-openjdk-amd64" // Add this line to explicitly set JAVA_HOME
-        PATH = "${JAVA_HOME}/bin:${env.PATH}" // Update PATH to include Java 17 bin directory
+    }
+
+    tools {
+        // Use Maven 3.9.9 automatically installed by Jenkins
+        maven 'Maven-3.9.9' 
     }
 
     parameters {
@@ -75,6 +78,7 @@ pipeline {
             steps {
                 script {
                     echo 'Executing Scope JAVA Build'
+                    // Use Maven to build the project
                     sh 'mvn clean install'
                 }
             }
