@@ -1,10 +1,16 @@
 pipeline {
     agent any
 
+    environment {
+        giurl = 'https://github.com/shinrah/JenkinsPipelineDemoProject.git'
+        gitBranch = "${params.GIT_Branch_Tag}"
+        formattedGitBranch = "${params.GIT_Branch_Tag}" // Adjust if formatting is needed
+    }
+
     parameters {
-        choice choices: ['Deploy', 'stop', 'start', 'restart'], description: 'Choose mode for deployment or starting the application server', name: 'mode'
-        choice choices: ['DEV', 'master', 'UAT'], description: 'Choose environment to deploy master', name: 'host'
-        choice choices: ['DEV', 'master', 'feature-branch', 'UAT'], description: 'Select Git branch to deploy', name: 'GIT_Branch_Tag'
+        choice choices: ['Deploy', 'stop', 'start', 'restart'], name: 'mode', description: 'Choose mode for deployment or starting the application server'
+        choice choices: ['DEV', 'master', 'UAT'], name: 'host', description: 'Choose environment to deploy master'
+        choice choices: ['DEV', 'master', 'feature-branch', 'UAT'], name: 'GIT_Branch_Tag', description: 'Select Git branch to deploy'
     }
 
     stages {
@@ -21,7 +27,7 @@ pipeline {
 
         stage('Checkout Git Branch') {
             steps {
-                git branch: "${env.GitBranch}", url: 'https://github.com/shinrah/JenkinsPipelineDemoProject.git'
+                git branch: "${env.GitBranch}", url: "${env.giurl}"
             }
         }
 
@@ -30,13 +36,7 @@ pipeline {
                 script {
                     if (params.mode == "Deploy") {
                         currentBuild.displayName = "${params.host}_${params.mode}_${BUILD_NUMBER}"
-
-                        def environment = "${params.host}"
-                        def giturl = 'https://github.com/shinrah/JenkinsPipelineDemoProject.git'
-                        def gitBranch = "${params.GIT_Branch_Tag}"
-
-                        echo "Ready to build for ${environment} from branch ${gitBranch}"
-                        // Add actual build commands here if needed
+                        echo "Ready to build for ${params.host} from branch ${params.GIT_Branch_Tag}"
                     }
                 }
             }
@@ -46,11 +46,7 @@ pipeline {
             steps {
                 script {
                     cleanWs()
-                    def gitBranch = "${params.GIT_Branch_Tag}"
-                    if (gitBranch != "") {
-                        def formattedGitBranch = gitBranch // placeholder if you want to format it
-                        echo "Formatted GIT branch tag is ${formattedGitBranch}"
-                    }
+                    echo "Formatted GIT branch tag is ${formattedGitBranch}"
                 }
             }
         }
@@ -62,11 +58,11 @@ pipeline {
                     if ("${gitBranch}" != "") {
                         checkout([
                             $class: 'GitSCM',
-                            branches: [[name: "${formattedGitBrach}"]],
+                            branches: [[name: "${formattedGitBranch}"]],
                             doGenerateSubmoduleConfigurations: false,
                             extensions: [],
                             submoduleCfg: [],
-                            userRemoteConfigs: [[url: giurl]]
+                            userRemoteConfigs: [[url: "${giurl}"]]
                         ])
                     }
                 }
