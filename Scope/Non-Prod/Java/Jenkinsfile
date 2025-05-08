@@ -24,4 +24,5 @@ pipeline {
                 git branch: "${env.GitBranch}", url: 'https://github.com/shinrah/JenkinsPipelineDemoProject.git'
             }
         }
-
+    } // <- Closing 'stages'
+} // <- Closing 'pipeline'
