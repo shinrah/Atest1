@@ -5,6 +5,10 @@ pipeline {
         giurl = 'https://github.com/shinrah/JenkinsPipelineDemoProject.git'
         gitBranch = "${params.GIT_Branch_Tag}"
         formattedGitBranch = "${params.GIT_Branch_Tag}" // Adjust if formatting is needed
+        
+        // Set JAVA_HOME environment variable to the JDK path
+        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
+        PATH = "${JAVA_HOME}/bin:${env.PATH}"
     }
 
     parameters {
@@ -79,3 +83,4 @@ pipeline {
         }
     }
 }
+
